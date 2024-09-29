@@ -1,19 +1,20 @@
+require("dotenv").config(); // Load environment variables from .env
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-const port = 5000; // or process.env.PORT in a production setup
+const port = process.env.PORT || 5001; // Use PORT from .env or default to 5000
 
 // Middleware
 app.use(cors());
 app.use(express.json()); // To parse incoming request body
 
-// MongoDB Atlas connection
-const mongoURI =
-  "mongodb+srv://salma:salma1234@cluster0.8rtm2.mongodb.net/crud_db?retryWrites=true&w=majority";
+// MongoDB Atlas connection from .env
+const mongoURI = process.env.MONGO_URI;
+console.log("Connecting to MongoDB with URI:", mongoURI);
 
 mongoose
-  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(mongoURI)
   .then(() => console.log("MongoDB connected..."))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -53,7 +54,7 @@ app.put("/items/:id", async (req, res) => {
     const updatedItem = await Item.findByIdAndUpdate(
       req.params.id,
       { name: req.body.name },
-      { new: true },
+      { new: true }
     );
     res.json(updatedItem);
   } catch (err) {
@@ -73,5 +74,5 @@ app.delete("/items/:id", async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log('Server running on port ${port}');
+  console.log(`Server running on port ${port}`);
 });
